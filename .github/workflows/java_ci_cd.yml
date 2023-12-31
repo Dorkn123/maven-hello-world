@@ -43,5 +43,5 @@ jobs:
     - name: Run Docker Image
       run: |
         docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/myapp:${{ steps.auto_increment_version.outputs.NEW_VERSION }}
-        sleep 10  # Wait for the application to start
+        sleep 30  # Wait for the application to start
         curl http://localhost:8080  # Replace with your app's health check endpoint
