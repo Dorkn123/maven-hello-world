@@ -22,6 +22,8 @@ jobs:
 
     - name: Compile and Package
       run: mvn clean package
+      working-directory: ./myapp
+
 
     - name: Build Docker Image
       run: docker build -t myapp:${{ steps.version.outputs.NEW_VERSION }} .
