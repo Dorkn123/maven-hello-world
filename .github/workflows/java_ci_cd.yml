@@ -19,6 +19,8 @@ jobs:
 
     - name: Auto-Increment Patch Version
       run: ./scripts/auto_increment_version.sh
+      working-directory: ./myapp
+
 
     - name: Compile and Package
       run: mvn clean package
