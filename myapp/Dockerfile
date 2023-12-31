@@ -7,5 +7,9 @@ RUN mvn clean package
 # Stage 2: Create the final runtime image
 FROM openjdk:11-jdk-slim
 WORKDIR /app
+
+# Expose port 8080
+EXPOSE 8080
+
 COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java","-jar","app.jar"]
