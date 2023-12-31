@@ -18,7 +18,7 @@ jobs:
         distribution: 'adopt'  # Specify the distribution here
 
     - name: Auto-Increment Patch Version
-      run: ./scripts/auto_increment_version.sh
+      run: ../scripts/auto_increment_version.sh
       working-directory: ./myapp
 
 
