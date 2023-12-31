@@ -18,21 +18,20 @@ jobs:
         distribution: 'adopt'  # Specify the distribution here
 
     - name: Auto-Increment Patch Version
+      id: auto_increment_version  # Adding an ID here
       run: ../scripts/auto_increment_version.sh
       working-directory: ./myapp
-
 
     - name: Compile and Package
       run: mvn clean package
       working-directory: ./myapp
 
-
     - name: Build Docker Image
-      run: docker build -t myapp:${{ steps.Auto-Increment_Patch_Version.outputs.NEW_VERSION }} .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ steps.auto_increment_version.outputs.NEW_VERSION }} .
       working-directory: ./myapp
 
     - name: Login to Docker Hub
       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
     - name: Push Docker Image to Docker Hub
-      run: docker push username/myapp:${{ steps.Auto-Increment_Patch_Version.outputs.NEW_VERSION }}
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ steps.auto_increment_version.outputs.NEW_VERSION }}
