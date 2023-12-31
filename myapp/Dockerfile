@@ -1,11 +1,11 @@
 # Start with a base image containing Java runtime
 FROM openjdk:11-jdk-slim
 
-# The application's jar file
-ARG JAR_FILE=myapp/target/*.jar
+# Set the working directory in the container
+WORKDIR /app
 
-# Add the application's jar to the container
-COPY ${JAR_FILE} app.jar
+# Copy the jar file to the container
+COPY target/*.jar app.jar
 
 # Run the jar file 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
