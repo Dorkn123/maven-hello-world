@@ -1,4 +1,4 @@
-name: Deploy Application with Helm
+name: Deploy to EKS with Helm
 
 on:
   push:
@@ -8,25 +8,35 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production  # Set your environment name
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Check Out Code
+        uses: actions/checkout@v2
 
-    - name: Install Helm
-      uses: azure/setup-helm@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Set up Kubectl
-      uses: azure/setup-kubectl@v1
+      - name: Install kubectl
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
 
-    - name: Connect to Kubernetes Cluster
-      run: |
-        # Add commands here to configure kubectl to connect to your Kubernetes cluster
-        # This might involve setting up credentials and cluster information
+      - name: Update kubeconfig
+        run: |
+          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.CLUSTER_NAME }}
 
-    - name: Deploy with Helm
-      run: |
-        helm upgrade --install myapp-release ./myapp-helm \
-          --set image.repository=${{ secrets.DOCKER_USERNAME }}/myapp \
-          --set image.tag=${{ steps.auto_increment_version.outputs.NEW_VERSION }}
+      - name: Install Helm
+        run: |
+          curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+          sudo apt-get install apt-transport-https --yes
+          echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+          sudo apt-get update
+          sudo apt-get install helm
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install myapp-release ./myapp-helm
