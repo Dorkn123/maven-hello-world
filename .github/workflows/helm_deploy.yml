@@ -1,0 +1,32 @@
+name: Deploy Application with Helm
+
+on:
+  push:
+    tags:
+      - 'deploy-*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production  # Set your environment name
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+
+    - name: Set up Kubectl
+      uses: azure/setup-kubectl@v1
+
+    - name: Connect to Kubernetes Cluster
+      run: |
+        # Add commands here to configure kubectl to connect to your Kubernetes cluster
+        # This might involve setting up credentials and cluster information
+
+    - name: Deploy with Helm
+      run: |
+        helm upgrade --install myapp-release ./myapp-helm \
+          --set image.repository=${{ secrets.DOCKER_USERNAME }}/myapp \
+          --set image.tag=${{ steps.auto_increment_version.outputs.NEW_VERSION }}
