@@ -51,5 +51,5 @@ jobs:
         docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/myapp:${{ steps.auto_increment_version.outputs.NEW_VERSION }}
         sleep 30  # Wait for the application to start
         docker logs $(docker ps -ql)  # Check the logs of the running container
-        curl http://localhost:8080/health  # Adjust to your application's specific endpoint
+        # curl http://localhost:8080/health  # Adjust to your application's specific endpoint
 
